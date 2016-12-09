@@ -73,24 +73,21 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
     public Command processPacketInMessage(IOFSwitch sw, OFPacketIn pi, IRoutingDecision decision, FloodlightContext cntx) {
 
 
-
+        DatapathId datapathId = sw.getId();
         Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 
         if (eth.getEtherType() == EthType.IPv4) {
+//            System.out.println("debug Forwarding_Base.java 80: get IP packet");
             /* We got an IPv4 packet; get the payload from Ethernet */
             IPv4 ipv4 = (IPv4) eth.getPayload();
                 if (ipv4.getTtl() == 1 ) {
-                    System.out.println("--------------------------------");
+                    System.out.println("----------------------------------------------------------------");
+                    System.out.println("debug Forwarding_Base.java 85 ");
+                    System.out.println("switch " + datapathId);
                     //TODO: create a packetout: ICMP_TIME_EXCEED, then send back to host
-                    System.out.println("time-out packet ");
-                    System.out.println("source address is: " + ipv4.getSourceAddress());
-                    System.out.println("source address is: " + ipv4.getSourceAddress());
-                    System.out.println("source address is: " + ipv4.getSourceAddress());
-                    System.out.println("source address is: " + ipv4.getSourceAddress());
-                    System.out.println("source address is: " + ipv4.getSourceAddress());
-                    System.out.println("Switch: " + sw.getId().toString());
-                    System.out.println("--------------------------------");
-                    return  Command.CONTINUE;
+                    System.out.println("----------------------------------------------------------------");
+                    return Command.STOP;
+//                    return  Command.CONTINUE;
                 }
             }
 
@@ -304,32 +301,6 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
             /* We got an IPv4 packet; get the payload from Ethernet */
             IPv4 ipv4 = (IPv4) eth.getPayload();
             if (ipv4.getProtocol() == IpProtocol.ICMP){
-                if (ipv4.getTtl()==1) {
-                    //TODO: create a packetout: ICMP_TIME_EXCEED, then send back to host
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                    System.out.println("time-out packet ");
-                }
-
                 ICMP icmp_packet = (ICMP) ipv4.getPayload();
                 isICMP = true;
             }
@@ -370,7 +341,7 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
 //                .setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("10.0.0.1/32"))
                         .setExact(MatchField.IP_PROTO, IpProtocol.ICMP);
 //						.setExact(MatchField.ICMPV4_TYPE, ICMPv4Type.ECHO);
-                System.out.println("debug: customized rule for ICMP ....");
+//                System.out.println("debug: customized rule for ICMP ....");
             }
         }
 

@@ -241,12 +241,35 @@ public abstract class ForwardingBase implements IOFMessageListener {
 
 			//TODO: add dec_ttl action
 			//actions.add(dec_ttl);
-			if (match.get(MatchField.ETH_TYPE) == EthType.IPv4){
+			if (match.get(MatchField.IP_PROTO) == IpProtocol.ICMP){
+//			if (match.get(MatchField.ETH_TYPE) == EthType.IPv4){
+				/* if the incoming packet is IPv4
+				* 1. only match the destination IP address
+				* 2. decrease ttl of the packet
+				* 3. keep the action of forwarding to corresponding port (route get from Route interface)
+				* */
 				OFActionDecNwTtl dec_ttl = sw.getOFFactory().actions().decNwTtl();
 				actions.add(dec_ttl);
-				System.out.println("decrease ttl ");
 
+				mb.wildcard(MatchField.IN_PORT);
+				mb.wildcard(MatchField.ETH_DST);
+				mb.wildcard(MatchField.ETH_SRC);
+				mb.wildcard(MatchField.TCP_DST);
+				mb.wildcard(MatchField.TCP_SRC);
+				mb.wildcard(MatchField.IPV4_SRC);
+
+				mb.setExact(MatchField.IPV4_DST, match.get(MatchField.IPV4_DST));
+
+//				System.out.println("debug, ForwardingBase.java 247: decrease ttl ");
 			}
+
+//			mb.wildcard(MatchField.IN_PORT);
+//			mb.wildcard(MatchField.ETH_DST);
+//			mb.wildcard(MatchField.ETH_SRC);
+//			mb.wildcard(MatchField.TCP_DST);
+//			mb.wildcard(MatchField.TCP_SRC);
+//			mb.wildcard(MatchField.IPV4_SRC);
+
 			actions.add(aob.build());
 
 
@@ -260,34 +283,7 @@ public abstract class ForwardingBase implements IOFMessageListener {
 			//TODO: if it is layer 3 packet, decrease TTL
 
 			//TODO: -Quyen: check match field, set specific cookies if needed (for future usage)
-			// TODO: create a database which consists of two parts (the key is cookies).
-
-			if (match.get(MatchField.IP_PROTO) == IpProtocol.ICMP){
-				mb.wildcard(MatchField.IN_PORT);
-				mb.wildcard(MatchField.ETH_DST);
-				mb.wildcard(MatchField.ETH_SRC);
-				mb.wildcard(MatchField.TCP_DST);
-				mb.wildcard(MatchField.TCP_SRC);
-				mb.wildcard(MatchField.IPV4_SRC);
-
-//				mb.setMasked()
-
-
-//				mb.setMasked(MatchField.IPV4_SRC, Masked.of("10.0.0.0",8));
-//				mb.setExact(MatchField.IPV4_SRC, IPv4Address.of("10.0.0.0/8"));
-
-
-				fmb.setCookie(U64.of(1000));
-				fmb.setTableId(TableId.of(1));
-				fmb.setHardTimeout(1000);
-				fmb.setIdleTimeout(1000);
-				System.out.println("debug: setup fixed cookie values ...");
-			}
-			else{
-				fmb.setCookie(cookie);
-
-			}
-
+			/* For the default packettype, keep the original sourcecode*/
 			fmb.setMatch(mb.build())
 					.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT)
 					.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT)
@@ -295,9 +291,26 @@ public abstract class ForwardingBase implements IOFMessageListener {
 //			.setCookie(cookie)     // Quyen
 					.setOutPort(outPort)
 					.setPriority(FLOWMOD_DEFAULT_PRIORITY);
+			/*For ICMP packet type, customize the */
 
+			if (match.get(MatchField.IP_PROTO) == IpProtocol.ICMP){
+//			if (match.get(MatchField.ETH_TYPE) == EthType.IPv4){
+//				mb.setMasked()
 
-			// End: Quyen's added
+//				mb.setMasked(MatchField.IPV4_SRC, Masked.of("10.0.0.0",8));
+//				mb.setExact(MatchField.IPV4_SRC, IPv4Address.of("10.0.0.0/8"));
+
+				fmb.setCookie(U64.of(1000));
+				fmb.setPriority(10);
+				fmb.setTableId(TableId.of(0));
+				fmb.setHardTimeout(10000);
+				fmb.setIdleTimeout(10000);
+//				System.out.println("ForwardingBase.java; 284: debug: setup fixed cookie values ...");
+			}
+			else{
+				fmb.setCookie(cookie);
+
+			}
 
 			FlowModUtils.setActions(fmb, actions, sw);
 			
