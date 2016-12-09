@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="floodlight" default="all">
+  
+  
+  <property file="floodlight.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.ear"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/jaccess.jar"/>
+      <include name="jre/lib/ext/jfxrt.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jfr.jar"/>
+      <include name="jre/lib/jfxswt.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="lib/ant-javafx.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="lib/javafx-mx.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/packager.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="lib/tools.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.maven:_args4j:args4j:2.0.16.classpath">
+    <pathelement location="${path.variable.maven_repository}/args4j/args4j/2.0.16/args4j-2.0.16.jar"/>
+  </path>
+  
+  <path id="library.maven:_cglib:cglib-nodep:2.2.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_ch.qos.logback:logback-classic:1.0.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/ch/qos/logback/logback-classic/1.0.0/logback-classic-1.0.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_ch.qos.logback:logback-core:1.0.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/ch/qos/logback/logback-core/1.0.0/logback-core-1.0.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.core:jackson-annotations:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/core/jackson-annotations/2.4.4/jackson-annotations-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.core:jackson-core:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/core/jackson-core/2.4.4/jackson-core-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.core:jackson-databind:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/core/jackson-databind/2.4.4/jackson-databind-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.4.4/jackson-dataformat-cbor-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/dataformat/jackson-dataformat-csv/2.4.4/jackson-dataformat-csv-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/dataformat/jackson-dataformat-smile/2.4.4/jackson-dataformat-smile-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/dataformat/jackson-dataformat-xml/2.4.4/jackson-dataformat-xml-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.4.4/jackson-dataformat-yaml-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.4.4/jackson-module-jaxb-annotations-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.fasterxml.jackson.module:jackson-module-jsonschema:2.4.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/fasterxml/jackson/module/jackson-module-jsonSchema/2.4.4/jackson-module-jsonSchema-2.4.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.code.findbugs:annotations:2.0.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/code/findbugs/annotations/2.0.1/annotations-2.0.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.code.findbugs:jsr305:2.0.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/code/findbugs/jsr305/2.0.1/jsr305-2.0.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.guava:guava:13.0.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/guava/guava/13.0.1/guava-13.0.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/googlecode/concurrentlinkedhashmap/concurrentlinkedhashmap-lru/1.2/concurrentlinkedhashmap-lru-1.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-codec:commons-codec:1.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-codec/commons-codec/1.4/commons-codec-1.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-lang:commons-lang:2.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-lang/commons-lang/2.5/commons-lang-2.5.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-logging:commons-logging:1.1.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_io.netty:netty-all:4.0.31.final.classpath">
+    <pathelement location="${path.variable.maven_repository}/io/netty/netty-all/4.0.31.Final/netty-all-4.0.31.Final.jar"/>
+  </path>
+  
+  <path id="library.maven:_javax.xml.stream:stax-api:1.0-2.classpath">
+    <pathelement location="${path.variable.maven_repository}/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar"/>
+  </path>
+  
+  <path id="library.maven:_junit:junit:4.8.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/junit/junit/4.8.2/junit-4.8.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.derby:derby:10.9.1.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/derby/derby/10.9.1.0/derby-10.9.1.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.httpcomponents:httpclient:4.1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/httpcomponents/httpclient/4.1.3/httpclient-4.1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.httpcomponents:httpcore:4.1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/httpcomponents/httpcore/4.1.3/httpcore-4.1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.thrift:libthrift:0.9.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/thrift/libthrift/0.9.0/libthrift-0.9.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.codehaus.woodstox:stax2-api:3.1.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.codehaus.woodstox:woodstox-core-asl:4.3.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/codehaus/woodstox/woodstox-core-asl/4.3.0/woodstox-core-asl-4.3.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.easymock:easymock:3.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/easymock/easymock/3.1/easymock-3.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.hamcrest:hamcrest-integration:1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/hamcrest/hamcrest-integration/1.3/hamcrest-integration-1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.hamcrest:hamcrest-library:1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.jsslutils:jsslutils:1.0.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/jsslutils/jsslutils/1.0.5/jsslutils-1.0.5.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.objenesis:objenesis:1.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/objenesis/objenesis/1.2/objenesis-1.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.projectfloodlight:openflowj:2.0.0-snapshot.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/projectfloodlight/openflowj/2.0.0-SNAPSHOT/openflowj-2.0.0-20160113.013531-27.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.python:jython-standalone:2.5.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/python/jython-standalone/2.5.2/jython-standalone-2.5.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.restlet.jse:org.restlet.ext.jackson:2.3.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/restlet/jse/org.restlet.ext.jackson/2.3.2/org.restlet.ext.jackson-2.3.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.restlet.jse:org.restlet.ext.jsslutils:2.3.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/restlet/jse/org.restlet.ext.jsslutils/2.3.2/org.restlet.ext.jsslutils-2.3.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.restlet.jse:org.restlet.ext.simple:2.3.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/restlet/jse/org.restlet.ext.simple/2.3.2/org.restlet.ext.simple-2.3.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.restlet.jse:org.restlet.ext.slf4j:2.3.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/restlet/jse/org.restlet.ext.slf4j/2.3.2/org.restlet.ext.slf4j-2.3.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.restlet.jse:org.restlet:2.3.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/restlet/jse/org.restlet/2.3.2/org.restlet-2.3.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.simpleframework:simple:5.1.6.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/simpleframework/simple/5.1.6/simple-5.1.6.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.slf4j:slf4j-api:1.6.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.yaml:snakeyaml:1.13.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/yaml/snakeyaml/1.13/snakeyaml-1.13.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  <import file="${basedir}/module_floodlight.xml"/>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.floodlight" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.floodlight" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>
