@@ -60,6 +60,7 @@ import org.projectfloodlight.openflow.protocol.OFPacketOut;
 import org.projectfloodlight.openflow.protocol.OFPortDesc;
 import org.projectfloodlight.openflow.protocol.OFVersion;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
+import org.projectfloodlight.openflow.protocol.action.OFActionOutput;
 import org.projectfloodlight.openflow.protocol.match.Match;
 import org.projectfloodlight.openflow.protocol.match.MatchField;
 import org.projectfloodlight.openflow.types.*;
@@ -74,64 +75,70 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
 
 
         DatapathId datapathId = sw.getId();
+        Long swId = sw.getId().getLong();
+
+        OFPort inPort = (pi.getVersion().compareTo(OFVersion.OF_12) < 0 ? pi.getInPort() : pi.getMatch().get(MatchField.IN_PORT));
         Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 
         if (eth.getEtherType() == EthType.IPv4) {
 //            System.out.println("debug Forwarding_Base.java 80: get IP packet");
             /* We got an IPv4 packet; get the payload from Ethernet */
+
             IPv4 ipv4 = (IPv4) eth.getPayload();
-                if (ipv4.getTtl() == 1 ) {
-                    UDP udp = (UDP) ipv4.getPayload();
+            if (ipv4.getTtl() == 1 ) {
+                System.out.println("----------------------------------------------------------------");
 
-                    System.out.println("----------------------------------------------------------------");
-                    System.out.println("debug Forwarding_Base.java 85 ");
-                    System.out.println("switch " + datapathId);
-                    //TODO: create a packetout: ICMP_TIME_EXCEED, then send back to host
-                    Ethernet l2 = new Ethernet();
-                    l2.setSourceMACAddress(MacAddress.of("00:00:00:00:00:01"));
-                    l2.setDestinationMACAddress(MacAddress.BROADCAST);
-                    l2.setEtherType(EthType.IPv4);
+                System.out.println("debug Forwarding_Base.java 85 ");
+                System.out.println("switch " + datapathId);
+                //TODO: create a packetout: ICMP_TIME_EXCEED, then send back to host
 
-                    IPv4 l3 = new IPv4();
-                    l3.setSourceAddress(IPv4Address.of("10.0.0.100"));
-                    l3.setDestinationAddress(ipv4.getSourceAddress());
-                    l3.setTtl((byte) 64);
-                    l3.setProtocol(IpProtocol.UDP);
+                Ethernet l2 = new Ethernet();
+                l2.setSourceMACAddress(MacAddress.of(datapathId));
+                l2.setDestinationMACAddress(eth.getSourceMACAddress());
+                l2.setEtherType(EthType.IPv4);
+
+                IPv4 l3 = new IPv4();
+
+                String IP = "20.0.0." + Long.toString(100 + swId);
+
+                l3.setSourceAddress(IPv4Address.of(IP));
+                l3.setDestinationAddress(ipv4.getSourceAddress());
+                l3.setTtl((byte) 64);
+                l3.setProtocol(IpProtocol.UDP);
 
                     ICMP l4 = new ICMP();
+                    l4.setIcmpType(ICMP.TIME_EXCEEDED);
+                    l4.setPayload(ipv4);
+//                    l4.resetChecksum();
 
-                    byte[] bytes = udp.serialize();
-                    Data l7 = new Data();
-                    l7.setData(bytes);
+                l2.setPayload(l3);
+                l3.setPayload(l4);
+//                l2.resetChecksum();
+//                    l4.setPayload(l7);
+
+                byte[] serializedData = l2.serialize();
+                OFActionOutput.Builder aob = sw.getOFFactory().actions().buildOutput();
+                aob.setPort(inPort);
+                aob.setMaxLen(Integer.MAX_VALUE);
+
+                List<OFAction> actions = new ArrayList<OFAction>();
+                actions.add(aob.build());
 
 
 
-                    l2.setPayload(l3);
-                    l3.setPayload(l4);
-                    l4.setPayload(l7);
-                    //TODO: copy the first 8bit of the packet
+                OFPacketOut po = sw.getOFFactory().buildPacketOut()
+                        .setData(serializedData)
+                        .setActions(actions)
+//                            .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD, 0xffFFffFF)))
+//                            .setInPort(OFPort.CONTROLLER)
+                        .build();
 
-                    byte[] serializedData = l2.serialize();
-                    OFPacketOut po = sw.getOFFactory().buildPacketOut() /* mySwitch is some IOFSwitch object */
-                            .setData(serializedData)
-                            .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD, 0xffFFffFF)))
-                            .setInPort(OFPort.CONTROLLER)
-                            .build();
-
-                    sw.write(po);
-
-                    System.out.println("----------------------------------------------------------------");
-                    System.out.println("Flooding Packetout ");
-                    System.out.println("Flooding Packetout ");
-                    System.out.println("Flooding Packetout ");
-                    System.out.println("Flooding Packetout ");
-                    System.out.println("Flooding Packetout ");
-                    return Command.STOP;
-//                    return  Command.CONTINUE;
-                }
+                sw.write(po);
+                return Command.STOP;
             }
+        }
 
-                // We found a routing decision (i.e. Firewall is enabled... it's the only thing that makes RoutingDecisions)
+        // We found a routing decision (i.e. Firewall is enabled... it's the only thing that makes RoutingDecisions)
         if (decision != null) {
             if (log.isTraceEnabled()) {
                 log.trace("Forwarding decision={} was made for PacketIn={}", decision.getRoutingAction().toString(), pi);
@@ -335,14 +342,14 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
 //        System.out.println("debug: Forwarding.createMatchFromPacket");
 
 
-        Boolean isUDP = false;
+        Boolean isICMP = false;
 
         if (eth.getEtherType() == EthType.IPv4) {
             /* We got an IPv4 packet; get the payload from Ethernet */
             IPv4 ipv4 = (IPv4) eth.getPayload();
-            if (ipv4.getProtocol() == IpProtocol.UDP){
-                UDP icmp_packet = (UDP) ipv4.getPayload();
-                isUDP = true;
+            if (ipv4.getProtocol() == IpProtocol.ICMP){
+                ICMP icmp_packet = (ICMP) ipv4.getPayload();
+                isICMP = true;
             }
 //			System.out.println("IPv4 ttl: " + ipv4.getTtl());
 //			System.out.println("!!!"  + ipv4.);
@@ -370,7 +377,7 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
         mb.setExact(MatchField.IN_PORT, inPort);
 
         if (FLOWMOD_DEFAULT_MATCH_MAC) {
-            if (!isUDP) {
+            if (!isICMP) {
                 mb.setExact(MatchField.ETH_SRC, srcMac)
                         .setExact(MatchField.ETH_DST, dstMac);
             }
