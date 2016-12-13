@@ -241,7 +241,7 @@ public abstract class ForwardingBase implements IOFMessageListener {
 
 			//TODO: add dec_ttl action
 			//actions.add(dec_ttl);
-			if (match.get(MatchField.IP_PROTO) == IpProtocol.ICMP){
+			if (match.get(MatchField.IP_PROTO) == IpProtocol.UDP){
 //			if (match.get(MatchField.ETH_TYPE) == EthType.IPv4){
 				/* if the incoming packet is IPv4
 				* 1. only match the destination IP address
