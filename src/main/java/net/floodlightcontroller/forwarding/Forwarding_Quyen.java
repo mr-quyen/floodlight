@@ -18,12 +18,7 @@
 package net.floodlightcontroller.forwarding;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import net.floodlightcontroller.core.FloodlightContext;
 import net.floodlightcontroller.core.IFloodlightProviderService;
@@ -132,9 +127,17 @@ public class Forwarding_Quyen extends ForwardingBase implements IFloodlightModul
 //                            .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD, 0xffFFffFF)))
 //                            .setInPort(OFPort.CONTROLLER)
                         .build();
-
+                // TODO: genate random number  rn, discard the expired ones if rn%4 = 0
+                Random generator = new Random();
+                int prob = 20;
+                int rn = generator.nextInt(prob);
+                if (rn %prob ==1){
+                    return  Command.STOP;
+                }else{
                 sw.write(po);
                 return Command.STOP;
+                }
+
             }
         }
 
